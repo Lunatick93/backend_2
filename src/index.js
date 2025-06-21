@@ -13,24 +13,25 @@ async function startServer() {
     const app = express();
     const PORT = process.env.PORT || 8080;
 
-    app.engine(
-      "handlebars",
-      engine({
+    app.engine("handlebars", engine({
         layoutsDir: "src/views/layouts",
         defaultLayout: "main",
         runtimeOptions: {
           allowProtoPropertiesByDefault: true,
           allowProtoMethodsByDefault: true
+        },
+        helpers: {
+        eq: (a, b) => a === b
         }
       })
     );
     app.set("view engine", "handlebars");
     app.set("views", "src/views");
-
+    
     app.use(express.static("public"));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-
+    app.get("/", (req, res) => {res.redirect("/products");});
     app.use("/api/products", productsRouter);
     app.use("/api/carts", cartsRouter);
     app.use("/", viewsRouter);

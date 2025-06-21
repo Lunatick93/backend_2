@@ -1,28 +1,60 @@
-<h1>Carrito {{@root.params.cid}}</h1>
+<h1>{{title}}</h1>
+
+<p>
+  <a href="/products">← Volver a productos</a>
+</p>
+
 <ul>
   {{#each products}}
     <li>
-      <strong>{{this.product.title}}</strong>
-      - Cantidad:
-      {{this.quantity}}
-      <button onclick="remove('{{this.product._id}}')">Eliminar</button>
-      <input
-        type="number"
-        value="{{this.quantity}}"
-        min="1"
-        onchange="updateQty('{{this.product._id}}', this.value)"
-      />
+      <strong>{{this.product.title}}</strong> — 
+      Cantidad: {{this.quantity}}
+      <button
+        type="button"
+        onclick="removeItem('{{this.product._id}}')"
+      >Eliminar</button>
     </li>
   {{/each}}
 </ul>
-<button onclick="clearCart()">Vaciar carrito</button>
+
+<p>
+  <button type="button" onclick="clearCart()">Vaciar carrito</button>
+</p>
 
 <script>
-  function remove(pid) { fetch(`/api/carts/{{@root.params.cid}}/products/${pid}`,
-  { method: 'DELETE' }) .then(() => location.reload()); } function
-  updateQty(pid, qty) { fetch(`/api/carts/{{@root.params.cid}}/products/${pid}`,
-  { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body:
-  JSON.stringify({ quantity: Number(qty) }) }).then(() => location.reload()); }
-  function clearCart() { fetch(`/api/carts/{{@root.params.cid}}`, { method:
-  'DELETE' }) .then(() => location.reload()); }
+  const cartId = "{{cartId}}";
+  function removeItem(productId) {
+    fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Error al eliminar el producto');
+      return res.json();
+    })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch(err => {
+      console.error(err);
+      alert('❌ ' + err.message);
+    });
+  }
+
+  function clearCart() {
+    if (!confirm('¿Seguro que querés vaciar el carrito?')) return;
+    fetch(`/api/carts/${cartId}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Error al vaciar carrito');
+      return res.json();
+    })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch(err => {
+      console.error(err);
+      alert('❌ ' + err.message);
+    });
+  }
 </script>

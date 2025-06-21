@@ -1,9 +1,30 @@
 <h1>{{product.title}}</h1>
-<p>{{product.description}}</p>
+<p>Descripción:{{product.description}}</p>
 <p>Precio: {{product.price}}</p>
 <p>Categoría: {{product.category}}</p>
-<button onclick="addToCart('{{product._id}}')">Agregar al carrito</button>
+<p>ID: {{product._id}}</p>
+
+<p>
+  <a href="/products">← Volver a productos</a>
+</p>
+
+<button id="addToCartBtn">Agregar al carrito</button>
+
 <script>
-  function addToCart(pid) { fetch(`/api/carts/1/product/${pid}`, { method:
-  'POST' }) .then(res => res.json()) .then(alert('Agregado al carrito')); }
+  const cartId = "{{cartId}}";
+
+  document.getElementById('addToCartBtn').addEventListener('click', () => {
+    fetch(`/api/carts/${cartId}/product/{{product._id}}`, {
+      method: 'POST'
+    })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error agregando al carrito');
+        alert('Producto agregado al carrito');
+      })
+      .catch(err => {
+        console.error('addProduct error:', err.message);
+        alert('❌ ' + err.message);
+      });
+  });
 </script>

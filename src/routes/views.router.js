@@ -12,7 +12,10 @@ router.get("/products", async (req, res) => {
     limit: Number(limit) || 10,
     sort: sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {}
   });
-
+  const pages = [];
+  for (let i = 1; i <= result.totalPages; i++) {
+    pages.push(i);
+  }
   let cart = await Cart.findOne();
   if (!cart) cart = await Cart.create({ products: [] });
 
@@ -28,22 +31,33 @@ router.get("/products", async (req, res) => {
       prevPage: result.prevPage,
       nextPage: result.nextPage,
       baseLink: `/products?limit=${limit || 10}&sort=${sort || ""}&query=${query || ""}`
-    }
+    },
+    pages
   });
 });
 
 router.get("/products/:pid", async (req, res) => {
   const prod = await Product.findById(req.params.pid).lean();
-  res.render("productDetail", { title: prod.title, product: prod });
+  if (!prod) return res.status(404).send("Producto no encontrado");
+  let cart = await Cart.findOne();
+  if (!cart) cart = await Cart.create({ products: [] });
+  res.render("productDetail", {
+    title:   prod.title,
+    product: prod,
+    cartId:  cart._id.toString()
+  });
 });
 
 router.get("/carts/:cid", async (req, res) => {
-  const cart = await mongoose
-    .model("Cart")
-    .findById(req.params.cid)
+  const cart = await Cart.findById(req.params.cid)
     .populate("products.product")
     .lean();
-  res.render("cartDetail", { title: "Carrito", products: cart.products });
+  if (!cart) return res.status(404).send("Carrito no encontrado");
+  res.render("cartDetail", {
+  title: "Carrito",
+  cartId:  req.params.cid,
+  products: cart.products
+});
 });
 
 export default router;

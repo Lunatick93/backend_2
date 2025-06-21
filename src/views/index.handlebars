@@ -1,42 +1,71 @@
 <h1>{{title}}</h1>
+<p>
+  <a href="/carts/{{cartId}}">🛒 Ver mi carrito</a>
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Precio</th>
+      <th>Stock</th>
+      <th>Código</th>
+      <th>Categoría</th>
+      <th>Disponible</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+      <tr>
+        <td>{{this.title}}</td>
+        <td>${{this.price}}</td>
+        <td>{{this.stock}}</td>
+        <th>{{this.code}}</th>
+        <td>{{this.category}}</td>
+        <td>{{#if this.status}}Sí{{else}}No{{/if}}</td>
+        <td>
+          <a href="/products/{{this._id}}">Ver detalles</a>
+          <button type="button" onclick="addToCart('{{this._id}}')">+Carrito</button>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
 
-<ul>
-  {{#each products}}
-    <li>
-      <strong>{{this.title}}</strong> – Precio: {{this.price}} –
-      <a href="/products/{{this._id}}">Ver detalles</a>
-      <button type="button" onclick="addToCart('{{this._id}}')">+Carrito</button>
-    </li>
-  {{/each}}
-</ul>
-
-<nav>
+<nav class="pagination">
   {{#if pagination.hasPrevPage}}
-    <a href="{{pagination.baseLink}}&page={{pagination.prevPage}}">Anterior</a>
+    <a href="{{pagination.baseLink}}&page={{pagination.prevPage}}">« Anterior</a>
+  {{else}}
+    <span class="disabled">« Anterior</span>
   {{/if}}
-  Página {{pagination.page}} de {{pagination.totalPages}}
+  {{#each pages}}
+    {{#if (eq this ../pagination.page)}}
+      <span class="current">{{this}}</span>
+    {{else}}
+      <a href="{{../pagination.baseLink}}&page={{this}}">{{this}}</a>
+    {{/if}}
+  {{/each}}
   {{#if pagination.hasNextPage}}
-    <a href="{{pagination.baseLink}}&page={{pagination.nextPage}}">Siguiente</a>
+    <a href="{{pagination.baseLink}}&page={{pagination.nextPage}}">Siguiente »</a>
+  {{else}}
+    <span class="disabled">Siguiente »</span>
   {{/if}}
 </nav>
+
 
 <script>
   const cartId = "{{cartId}}";
 
   function addToCart(productId) {
-    console.debug("DEBUG addToCart called with:", productId);
-    fetch(`/api/carts/${cartId}/product/${productId}`, {
-      method: 'POST'
-    })
+    fetch(`/api/carts/${cartId}/product/${productId}`, { method: 'POST' })
       .then(async res => {
         const data = await res.json();
-        console.log("Fetch response:", res.status, data);
         if (!res.ok) throw new Error(data.error || 'Error agregando al carrito');
-        alert('✅ Producto agregado al carrito');
+        alert(' Producto agregado al carrito');
       })
       .catch(err => {
         console.error(err);
-        alert('❌ Error al agregar: ' + err.message);
+        alert(' Error al agregar: ' + err.message);
       });
   }
 </script>
