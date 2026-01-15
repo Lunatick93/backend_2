@@ -17,14 +17,14 @@ export async function addProductToCart(cid, pid) {
   const prod = await Product.findById(pid);
   if (!prod) throw new Error("Producto no encontrado");
 
-  // Validar que hay stock disponible
+  
   if (prod.stock <= 0) {
     throw new Error("Producto sin stock disponible");
   }
 
   const item = cart.products.find((p) => p.product.toString() === pid);
   if (item) {
-    // Validar que no exceda el stock disponible
+  
     if (item.quantity >= prod.stock) {
       throw new Error(`Solo hay ${prod.stock} unidades disponibles`);
     }
@@ -68,7 +68,7 @@ export async function updateCartProducts(cid, productsArray) {
   const cart = await Cart.findById(cid);
   if (!cart) throw new Error("Carrito no encontrado");
 
-  // Validar que todos los productos existan
+  
   for (const item of productsArray) {
     const prod = await Product.findById(item.product);
     if (!prod) throw new Error(`Producto ${item.product} no encontrado`);
@@ -91,7 +91,7 @@ export async function updateProductQuantity(cid, pid, qty) {
   const prod = await Product.findById(pid);
   if (!prod) throw new Error("Producto no encontrado");
 
-  // Validar que la cantidad no exceda el stock
+  
   if (qty > prod.stock) {
     throw new Error(`Solo hay ${prod.stock} unidades disponibles`);
   }

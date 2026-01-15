@@ -2,9 +2,11 @@ import "dotenv/config";
 import express from "express";
 import { engine } from "express-handlebars";
 import { connectDB } from "./config/db.js";
+import passport from "./config/passport.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
+import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
 
 async function startServer() {
@@ -32,12 +34,14 @@ async function startServer() {
     app.use(express.static("public"));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(passport.initialize());
+
     app.get("/", (req, res) => {res.redirect("/products");});
     app.use("/api/products", productsRouter);
     app.use("/api/carts", cartsRouter);
+    app.use("/api/sessions", sessionsRouter);
     app.use("/", viewsRouter);
 
-    // Middleware de manejo de errores (debe ser último)
     app.use(errorHandler);
 
     app.listen(PORT, () => {

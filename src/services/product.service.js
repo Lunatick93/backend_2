@@ -44,10 +44,7 @@ export async function getProduct(id) {
 }
 
 export async function createProduct(data) {
-  // Validar que existan todos los campos obligatorios
   productValidators.validateRequired(data);
-  
-  // Validar cada campo específico
   productValidators.validateTitle(data.title);
   productValidators.validateDescription(data.description);
   productValidators.validateCode(data.code);
@@ -55,7 +52,6 @@ export async function createProduct(data) {
   productValidators.validateStock(data.stock);
   productValidators.validateCategory(data.category);
 
-  // Verificar que el código sea único
   const existingProduct = await Product.findOne({ code: data.code });
   if (existingProduct) {
     throw new Error("El código del producto ya existe");
@@ -67,10 +63,8 @@ export async function createProduct(data) {
 
 export async function updateProduct(id, data) {
   productValidators.validateMongoId(id);
-  
+
   if (data.id) throw new Error("No se puede modificar el campo id");
-  
-  // Validar solo los campos que se envían para actualizar
   if (data.title) productValidators.validateTitle(data.title);
   if (data.description) productValidators.validateDescription(data.description);
   if (data.price) productValidators.validatePrice(data.price);
@@ -78,7 +72,6 @@ export async function updateProduct(id, data) {
   if (data.category) productValidators.validateCategory(data.category);
   if (data.code) {
     productValidators.validateCode(data.code);
-    // Verificar que el nuevo código no exista en otro producto
     const existingProduct = await Product.findOne({ code: data.code, _id: { $ne: id } });
     if (existingProduct) {
       throw new Error("El código del producto ya existe");
@@ -89,7 +82,7 @@ export async function updateProduct(id, data) {
     new: true,
     runValidators: true
   }).lean();
-  
+
   if (!updated) throw new Error("Producto no encontrado");
   return updated;
 }

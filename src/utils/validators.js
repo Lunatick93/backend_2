@@ -1,12 +1,9 @@
-/**
- * Validadores para productos y carritos
- */
 
 export const productValidators = {
   /**
-   * Valida que un producto tenga los campos obligatorios
-   * @param {Object} data - Datos del producto
-   * @throws {Error} Si falta un campo obligatorio
+   * valida que un producto tenga los campos obligatorios
+   * @param {Object} data - dtos del producto
+   * @throws {Error} sifalta un campo obligatorio
    */
   validateRequired(data) {
     const required = ["title", "description", "code", "price", "stock", "category"];
@@ -18,9 +15,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que el precio sea un número positivo
+   * valida que el precio sea un numero positivo
    * @param {number} price - Precio del producto
-   * @throws {Error} Si el precio no es válido
+   * @throws {Error}si el precio no es valido
    */
   validatePrice(price) {
     if (typeof price !== "number" || price <= 0) {
@@ -29,9 +26,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que el stock sea un número no negativo
-   * @param {number} stock - Stock del producto
-   * @throws {Error} Si el stock no es válido
+   * valida que el stock sea un numero no negativo
+   * @param {number} stock -stock del producto
+   * @throws {Error}si el stock no es valido
    */
   validateStock(stock) {
     if (typeof stock !== "number" || stock < 0 || !Number.isInteger(stock)) {
@@ -40,9 +37,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que el código sea único y válido
-   * @param {string} code - Código del producto
-   * @throws {Error} Si el código no es válido
+   * valida que el codigo sea unico y valido
+   * @param {string} code -codigodel producto
+   * @throws {Error}si el código no es valido
    */
   validateCode(code) {
     if (!code || typeof code !== "string" || code.trim().length === 0) {
@@ -54,9 +51,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que el título tenga longitud válida
-   * @param {string} title - Título del producto
-   * @throws {Error} Si el título no es válido
+   * valida que el titulo tenga longitud valida
+   * @param {string} title - titulo del producto
+   * @throws {Error} si el título no es valido
    */
   validateTitle(title) {
     if (!title || typeof title !== "string" || title.trim().length === 0) {
@@ -68,9 +65,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que la descripción tenga longitud válida
-   * @param {string} description - Descripción del producto
-   * @throws {Error} Si la descripción no es válida
+   * valida que la descripción tenga longitud valida
+   * @param {string} description - descripcion del producto
+   * @throws {Error} si la descripción no es valida
    */
   validateDescription(description) {
     if (!description || typeof description !== "string" || description.trim().length === 0) {
@@ -82,9 +79,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida que la categoría sea válida
-   * @param {string} category - Categoría del producto
-   * @throws {Error} Si la categoría no es válida
+   *valida que la categoria sea valida
+   * @param {string} category - categoria del producto
+   * @throws {Error} si la categoria no es valida
    */
   validateCategory(category) {
     if (!category || typeof category !== "string" || category.trim().length === 0) {
@@ -93,9 +90,9 @@ export const productValidators = {
   },
 
   /**
-   * Valida el ID de MongoDB
-   * @param {string} id - ID a validar
-   * @throws {Error} Si el ID no es válido
+   * valida el id de mongo
+   * @param {string} id -id  validar
+   * @throws {Error} si el id no es valido
    */
   validateMongoId(id) {
     if (!id || typeof id !== "string" || !/^[0-9a-fA-F]{24}$/.test(id)) {
@@ -106,9 +103,9 @@ export const productValidators = {
 
 export const cartValidators = {
   /**
-   * Valida que la cantidad sea válida
-   * @param {number} quantity - Cantidad a validar
-   * @throws {Error} Si la cantidad no es válida
+   * valida que la cantidad sea valida
+   * @param {number} quantity - cantidad a validar
+   * @throws {Error} si la cantidad no es válida
    */
   validateQuantity(quantity) {
     if (typeof quantity !== "number" || quantity <= 0 || !Number.isInteger(quantity)) {
@@ -117,9 +114,9 @@ export const cartValidators = {
   },
 
   /**
-   * Valida que el array de productos sea válido
-   * @param {Array} products - Array de productos
-   * @throws {Error} Si el array no es válido
+   * valida que el array de productos sea valido
+   * @param {Array} products - array de productos
+   * @throws {Error} si el array no es valido
    */
   validateProductsArray(products) {
     if (!Array.isArray(products)) {
