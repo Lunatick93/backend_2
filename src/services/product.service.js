@@ -1,4 +1,5 @@
 import Product from "../models/product.model.js";
+import { productValidators } from "../utils/validators.js";
 
 export async function queryProducts({ limit = 10, page = 1, sort, query }) {
   const filter = {};
@@ -36,28 +37,66 @@ export async function queryProducts({ limit = 10, page = 1, sort, query }) {
 }
 
 export async function getProduct(id) {
+  productValidators.validateMongoId(id);
   const p = await Product.findById(id).lean();
+  if (!p) throw new Error("Producto no encontrado");
   return p;
 }
 
 export async function createProduct(data) {
-  if (!data.title || !data.price) {
-    throw new Error("El título y el precio son obligatorios");
+  // Validar que existan todos los campos obligatorios
+  productValidators.validateRequired(data);
+  
+  // Validar cada campo específico
+  productValidators.validateTitle(data.title);
+  productValidators.validateDescription(data.description);
+  productValidators.validateCode(data.code);
+  productValidators.validatePrice(data.price);
+  productValidators.validateStock(data.stock);
+  productValidators.validateCategory(data.category);
+
+  // Verificar que el código sea único
+  const existingProduct = await Product.findOne({ code: data.code });
+  if (existingProduct) {
+    throw new Error("El código del producto ya existe");
   }
+
   const newProd = new Product(data);
   return await newProd.save();
 }
 
 export async function updateProduct(id, data) {
+  productValidators.validateMongoId(id);
+  
   if (data.id) throw new Error("No se puede modificar el campo id");
+  
+  // Validar solo los campos que se envían para actualizar
+  if (data.title) productValidators.validateTitle(data.title);
+  if (data.description) productValidators.validateDescription(data.description);
+  if (data.price) productValidators.validatePrice(data.price);
+  if (data.stock) productValidators.validateStock(data.stock);
+  if (data.category) productValidators.validateCategory(data.category);
+  if (data.code) {
+    productValidators.validateCode(data.code);
+    // Verificar que el nuevo código no exista en otro producto
+    const existingProduct = await Product.findOne({ code: data.code, _id: { $ne: id } });
+    if (existingProduct) {
+      throw new Error("El código del producto ya existe");
+    }
+  }
+
   const updated = await Product.findByIdAndUpdate(id, data, {
     new: true,
     runValidators: true
   }).lean();
+  
+  if (!updated) throw new Error("Producto no encontrado");
   return updated;
 }
 
 export async function deleteProduct(id) {
+  productValidators.validateMongoId(id);
   const deleted = await Product.findByIdAndDelete(id).lean();
+  if (!deleted) throw new Error("Producto no encontrado");
   return deleted !== null;
 }

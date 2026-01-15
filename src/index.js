@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { engine } from "express-handlebars";
 import { connectDB } from "./config/db.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
@@ -35,6 +36,9 @@ async function startServer() {
     app.use("/api/products", productsRouter);
     app.use("/api/carts", cartsRouter);
     app.use("/", viewsRouter);
+
+    // Middleware de manejo de errores (debe ser último)
+    app.use(errorHandler);
 
     app.listen(PORT, () => {
       console.log(`Server listening on http://localhost:${PORT}`);
