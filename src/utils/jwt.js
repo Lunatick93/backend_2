@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "tu_secret_key_segura_aca";
+const JWT_SECRET = process.env.JWT_SECRET || "mi_secret_key";
 
 /**
-  @param {Object} user - Datos del usuario
+  @param {Object} user - datos del usuario
   @returns {String} 
  */
 export function generateToken(user) {
@@ -19,9 +19,9 @@ export function generateToken(user) {
 }
 
 /**
- * @param {String} token - Token JWT
- * @returns {Object} Payload del token
- * @throws {Error} Si el token es inválido
+ * @param {String} token - token JWT
+ * @returns {Object} 
+ * @throws {Error} si el token es invalido
  */
 export function verifyToken(token) {
   try {
@@ -32,8 +32,8 @@ export function verifyToken(token) {
 }
 
 /**
- * @param {String} authHeader - Header Authorization
- * @returns {String} Token sin "Bearer "
+ * @param {String} authHeader - header authorization (para testear en postman)
+ * @returns {String} 
  */
 export function extractToken(authHeader) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

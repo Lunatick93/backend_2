@@ -38,7 +38,7 @@ passport.use(
   new JWTStrategy.Strategy(
     {
       jwtFromRequest: JWTExtract.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET || "tu_secret_key_segura_aqui"
+      secretOrKey: process.env.JWT_SECRET || "mi_secret_key"
     },
     async (payload, done) => {
       try {
@@ -59,13 +59,8 @@ passport.use(
   "current",
   new JWTStrategy.Strategy(
     {
-      jwtFromRequest: (req) => {
-        if (req && req.headers.authorization) {
-          return extractToken(req.headers.authorization);
-        }
-        return null;
-      },
-      secretOrKey: process.env.JWT_SECRET || "tu_secret_key_segura_aqui"
+      jwtFromRequest: JWTExtract.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET || "mi_secret_key"
     },
     async (payload, done) => {
       try {
