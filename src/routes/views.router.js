@@ -2,8 +2,56 @@ import { Router } from "express";
 import Product from "../models/product.model.js";
 import Cart from "../models/cart.model.js";
 import mongoosePaginate from "mongoose-paginate-v2";
+import { getCurrent } from "../middlewares/auth.middleware.js";
+import User from "../models/user.model.js";
+import { verifyToken } from "../utils/jwt.js";
 
 const router = Router();
+
+router.get("/auth-demo", async (req, res) => {
+  try {
+    let user = null;
+    let userJSON = null;
+    let error = null;
+
+    // Si viene token en la query, úsalo
+    if (req.query.token) {
+      try {
+        const decoded = verifyToken(req.query.token);
+        user = await User.findById(decoded.id);
+        if (!user) {
+          error = "Usuario no encontrado en la base de datos";
+        } else {
+          userJSON = JSON.stringify(user.toObject(), null, 2);
+        }
+      } catch (err) {
+        error = "Token inválido o expirado";
+        console.error("Error verificando token:", err.message);
+      }
+    } else if (req.user) {
+      // Si no hay token en query, usa el del request (si está autenticado)
+      user = req.user;
+      userJSON = JSON.stringify(user.toObject ? user.toObject() : user, null, 2);
+    }
+
+    res.render("authorizationDemo", {
+      title: "Demo - Autorización por Rol",
+      currentUser: user,
+      userJSON: userJSON,
+      error: error,
+      helpers: {
+        eq: (a, b) => a === b
+      }
+    });
+  } catch (err) {
+    console.error("Error en /auth-demo:", err);
+    res.status(500).render("authorizationDemo", {
+      title: "Demo - Autorización por Rol",
+      currentUser: null,
+      error: "Error interno del servidor: " + err.message
+    });
+  }
+});
 
 router.get("/products", async (req, res) => {
   const { limit, page, sort, query } = req.query;

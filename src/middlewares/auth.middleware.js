@@ -1,13 +1,8 @@
 import passport from "passport";
 
-/**
- * MIDDLEWARE: authenticateLocal
- * Valida credenciales (email + password) usando Passport Strategy Local
- * Compara con la base de datos y valida la contraseña con bcrypt
- */
 export const authenticateLocal = (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    // Error del servidor
+    // error del servidor
     if (err) {
       return res.status(500).json({ 
         status: "error",
@@ -16,28 +11,21 @@ export const authenticateLocal = (req, res, next) => {
       });
     }
 
-    // Usuario no autenticado (credenciales inválidas)
+
     if (!user) {
       return res.status(401).json({ 
         status: "error",
         error: info?.message || "Credenciales inválidas" 
       });
     }
-
-    // Usuario autenticado correctamente
     req.user = user;
     next();
   })(req, res, next);
 };
 
-/**
- * MIDDLEWARE: authenticateJWT
- * Valida JWT usando Passport Strategy JWT
- * Se usa para proteger rutas que requieren token válido
- */
 export const authenticateJWT = (req, res, next) => {
   passport.authenticate("jwt", (err, user, info) => {
-    // Error del servidor
+    // error del servidor
     if (err) {
       return res.status(500).json({ 
         status: "error",
@@ -46,7 +34,7 @@ export const authenticateJWT = (req, res, next) => {
       });
     }
 
-    // Token inválido o expirado
+    // token invalido o expirado
     if (!user) {
       return res.status(401).json({ 
         status: "error",
@@ -54,27 +42,16 @@ export const authenticateJWT = (req, res, next) => {
       });
     }
 
-    // Token válido
+    // token valido
     req.user = user;
     next();
   })(req, res, next);
 };
 
-/**
- * MIDDLEWARE: getCurrent
- * ESTRATEGIA PASSPORT "CURRENT" PARA VALIDAR USUARIO LOGUEADO
- * 
- * Este middleware:
- * 1. Extrae el JWT del header Authorization: Bearer {token}
- * 2. Valida la firma del token con JWT_SECRET
- * 3. Busca el usuario en la base de datos por su ID
- * 4. Devuelve los datos del usuario actualizado de la BD
- * 5. Devuelve 401 si el token es inválido o no existe
- */
+
 export const getCurrent = (req, res, next) => {
-  // Usar passport.authenticate("current") de forma explícita
   passport.authenticate("current", (err, user, info) => {
-    // Error del servidor
+    // error del servidor (sugerencia del profe con el manejo de errores)
     if (err) {
       return res.status(401).json({ 
         status: "error",
@@ -83,7 +60,7 @@ export const getCurrent = (req, res, next) => {
       });
     }
 
-    // Token ausente o inválido
+    // token ausente o invalido
     if (!user) {
       return res.status(401).json({ 
         status: "error",
@@ -92,7 +69,7 @@ export const getCurrent = (req, res, next) => {
       });
     }
 
-    // Token válido, usuario encontrado en BD
+    // token valido, usuario encontrado en BD
     req.user = user;
     next();
   })(req, res, next);
