@@ -39,7 +39,7 @@ const userSchema = new Schema(
       default: "user"
     }
     ,
-    // Campos para recuperación de contraseña
+    // campos para recuperacion de contraseña
     resetPasswordToken: {
       type: String,
       select: false

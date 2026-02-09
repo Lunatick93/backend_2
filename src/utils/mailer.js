@@ -7,9 +7,10 @@ const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const FROM_EMAIL = process.env.FROM_EMAIL || "no-reply@miapp.com";
-const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 8080}`;
+const BASE_URL = process.env.BASE_URL;
+if (!BASE_URL) throw new Error("BASE_URL no definido en .env");
 
-// Twilio
+// twilio
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE_FROM = process.env.TWILIO_PHONE_FROM;
@@ -18,7 +19,6 @@ function createTransporter() {
   let transporterConfig = null;
 
   if (SENDGRID_API_KEY) {
-    // Usar SendGrid vía SMTP (user=apikey, pass=SENDGRID_API_KEY)
     transporterConfig = {
       host: "smtp.sendgrid.net",
       port: 587,
@@ -32,14 +32,14 @@ function createTransporter() {
     transporterConfig = {
       host: SMTP_HOST,
       port: SMTP_PORT,
-      secure: SMTP_PORT == 465, // true for 465, false for other ports
+      secure: SMTP_PORT == 465,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS
       }
     };
   } else {
-    throw new Error("No SMTP configuration found. Set SMTP_HOST/SMTP_USER/SMTP_PASS or SENDGRID_API_KEY in .env");
+    throw new Error("No se encontro la configuracion SMTP. Set SMTP_HOST/SMTP_USER/SMTP_PASS sino SENDGRID_API_KEY in .env");
   }
 
   return nodemailer.createTransport(transporterConfig);
@@ -67,7 +67,7 @@ export async function sendResetEmail(toEmail, token) {
 }
 
 
-// Envía SMS con Twilio con el enlace de restablecimiento
+// enviar SMS con twilio con el enlace de restablecimiento
 export async function sendResetSMS(toPhoneNumber, token) {
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_FROM) {
     throw new Error("Twilio no está configurado. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_FROM in .env");

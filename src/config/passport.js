@@ -2,7 +2,7 @@ import passport from "passport";
 import LocalStrategy from "passport-local";
 import JWTStrategy from "passport-jwt";
 import User from "../models/user.model.js";
-import { verifyToken, extractToken } from "../utils/jwt.js";
+import { verifyToken, extractToken, JWT_SECRET } from "../utils/jwt.js";
 
 const JWTExtract = JWTStrategy.ExtractJwt;
 
@@ -38,7 +38,7 @@ passport.use(
   new JWTStrategy.Strategy(
     {
       jwtFromRequest: JWTExtract.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET || "mi_secret_key"
+      secretOrKey: JWT_SECRET
     },
     async (payload, done) => {
       try {
@@ -60,7 +60,7 @@ passport.use(
   new JWTStrategy.Strategy(
     {
       jwtFromRequest: JWTExtract.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET || "mi_secret_key"
+      secretOrKey: JWT_SECRET
     },
     async (payload, done) => {
       try {
